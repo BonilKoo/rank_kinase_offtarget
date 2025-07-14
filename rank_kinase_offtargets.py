@@ -177,6 +177,8 @@ def map_structure(structure_distance_matrix_df):
         f"reduced to kinase matrix of shape {kinase_distance_matrix_df.shape}."
     )
     
+    kinase_distance_matrix_df.to_csv("kinase_distance_matrix.csv")
+    
     return kinase_distance_matrix_df
 
 def rank_kinase_offtargets(kinase_distance_matrix_df, target, output):
