@@ -42,13 +42,13 @@ pip install numpy pandas requests scikit-learn tqdm opencadd kissim
 Run from scratch:
 
 ```bash
-python kinase_offtarget_ranking.py --target BRAF
+python kinase_offtarget_ranking.py --target CDK7
 ```
 
 Use precomputed kinase distance matrix:
 
 ```bash
-python kinase_offtarget_ranking.py --target BRAF --use_save kinase_distance_matrix.csv
+python kinase_offtarget_ranking.py --target CDK7 --use_save kinase_distance_matrix.csv
 ```
 
 ## Output
@@ -97,9 +97,9 @@ To avoid recomputation, you can save and reuse the kinase distance matrix with `
 ## Output Example
 ```python-repl
 kinase,distance
-BRAF,0.000000
-RAF1,0.213145
-MAP2K1,0.342187
+CDK7,0.0
+CDK2,21.85548729228192
+CDK9,25.32728540306132
 ```
 
 ## Error Handling
