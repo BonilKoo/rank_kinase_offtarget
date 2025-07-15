@@ -76,7 +76,7 @@ def preprocess_kinase_data(kinase_selection_df):
     structure_klifs_ids = structures_df["structure.klifs_id"].to_list()
     print(f"Number of structures: {len(structure_klifs_ids)}")
     
-    return structure_klifs_ids
+    return structures_df, structure_klifs_ids
 
 def cal_KiSSim_fps(structure_klifs_ids, N_CORES=1):
     kissim_fingerprints_df_list = []
@@ -143,15 +143,15 @@ def compare_structures(kissim_fingerprints_df_z):
     structure_distance_matrix_array = pairwise.nan_euclidean_distances(kissim_fingerprints_df_z.values)
     
     # Create DataFrame with structure KLIFS IDs as index/columns
-    structure_klifs_ids = kissim_fingerprints_df.index.to_list()
+    structure_klifs_ids = kissim_fingerprints_df_z.index.to_list()
     structure_distance_matrix_df = pd.DataFrame(
         structure_distance_matrix_array, index=structure_klifs_ids, columns=structure_klifs_ids
     )
     print(f"Structure distance matrix size: {structure_distance_matrix_df.shape}")
     
-    return structure_distance_matrix_df
+    return structure_distance_matrix_df, structure_klifs_ids
 
-def map_structure(structure_distance_matrix_df):
+def map_structure(structure_distance_matrix_df, structures_df, structure_klifs_ids):
     # Copy distance matrix to kinase matrix
     kinase_distance_matrix_df = structure_distance_matrix_df.copy()
     # Replace structure KLIFS IDs with the structures' kinase names
@@ -190,11 +190,11 @@ def rank_kinase_offtargets(kinase_distance_matrix_df, target, output):
 def main(args):
     if args.use_save is None:
         kinase_selection_df = download_kinase_data(args)
-        structure_klifs_ids = preprocess_kinase_data(kinase_selection_df)
+        structures_df, structure_klifs_ids = preprocess_kinase_data(kinase_selection_df)
         kissim_fingerprints_df = cal_KiSSim_fps(structure_klifs_ids, N_CORES=args.j)
         kissim_fingerprints_df_z = standarize_fingerprints(kissim_fingerprints_df)
-        structure_distance_matrix_df = compare_structures(kissim_fingerprints_df_z)
-        kinase_distance_matrix_df = map_structure(structure_distance_matrix_df)
+        structure_distance_matrix_df, structure_klifs_ids = compare_structures(kissim_fingerprints_df_z)
+        kinase_distance_matrix_df = map_structure(structure_distance_matrix_df, structures_df, structure_klifs_ids)
     else:
         kinase_distance_matrix_df = pd.read_csv(args.use_save, index_col=0)
         print(f"Loaded kinase distance matrix of shape {kinase_distance_matrix_df.shape} from {args.use_save}.")
